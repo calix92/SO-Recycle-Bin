@@ -1,6 +1,13 @@
 # SO-Recycle-Bin
 1º Projeto de SO
-ola ruivini, so para dizer que temos de ir mais vezes 2,5o cada aahahahahahha
 
-espero que o caridade te coma o cuzinho e lave os dentes nesses pelos do cu
-beijos
+README.md
+🔴 Falta
+Ainda não o gerámos (explicações de uso, exemplos e screenshots).
+
+
+TECHNICAL_DOC.md
+🟡 Quase completo
+Já criado! Só falta adicionarem os fluxogramas (as brechas estão no documento).
+
+E adiconar comentarios a explicar cada função.

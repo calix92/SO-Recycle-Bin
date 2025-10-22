@@ -21,6 +21,8 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
+VERBOSE=0
+
 
 set -euo pipefail
 
@@ -32,6 +34,17 @@ log_message() {
     local message="$1"
     echo "$(date '+%Y-%m-%d %H:%M:%S') | $message" >> "$LOG_FILE"
 }
+
+# ==============================
+# Function: verbose_echo
+# Description: Prints detailed messages only if verbose mode is enabled
+# ==============================
+verbose_echo() {
+    if [ "$VERBOSE" -eq 1 ]; then
+        echo -e "${YELLOW}[VERBOSE]${NC} $1"
+    fi
+}
+
 
 # ==============================
 # Function: generate_unique_id
@@ -97,6 +110,10 @@ delete_file() {
         perms=$(stat -c %a "$file_path")
         local owner
         owner=$(stat -c %U:%G "$file_path")
+
+        verbose_echo "Moving '$file_path' → '$dest'"
+        verbose_echo "Metadata: type=$file_type, size=${file_size}B, perms=$perms, owner=$owner"
+
 
         mv "$file_path" "$dest"
 
@@ -168,6 +185,10 @@ restore_file() {
         echo -e "${YELLOW}File already exists. Restoring as:${NC} $alt"
         path="$alt"
     fi
+
+    verbose_echo "Restoring '$src' → '$path'"
+    verbose_echo "Restored permissions: $perms | Owner: $owner"
+
 
     mv "$src" "$path"
     chmod "$perms" "$path"
@@ -245,6 +266,8 @@ Commands:
 
   help | -h | --help        Show this help message
   version                   Display project version and author info
+  --verbose                 Enable detailed output for debugging
+
 
 Examples:
   ./recycle_bin.sh delete file.txt
@@ -280,6 +303,8 @@ show_statistics() {
         return
     fi
 
+    verbose_echo "Calculating statistics from metadata.db"
+
     local total_items total_size files_count dirs_count oldest newest avg_size
     total_items=$(($(wc -l < "$METADATA_FILE") - 1))
     total_size=$(tail -n +2 "$METADATA_FILE" | awk -F',' '{sum+=$5} END {print sum}')
@@ -307,6 +332,9 @@ auto_cleanup() {
         echo -e "${RED}Error: Config file missing${NC}"
         return 1
     fi
+
+    verbose_echo "Checking retention ($retention days)... comparing $date → $diff days old"
+
 
     local retention
     retention=$(grep "RETENTION_DAYS" "$CONFIG_FILE" | cut -d'=' -f2)
@@ -336,6 +364,8 @@ check_quota() {
         echo -e "${RED}Error: Config file missing${NC}"
         return 1
     fi
+
+    verbose_echo "Quota check: total=${total}MB | limit=${quota}MB"
 
     local quota total used_percent
     quota=$(grep "MAX_SIZE_MB" "$CONFIG_FILE" | cut -d'=' -f2)
@@ -386,29 +416,122 @@ preview_file() {
 
 
 # ==============================
-# Main
+# Function: main_menu
+# Description: Interactive menu displayed when no arguments are provided
+# ==============================
+main_menu() {
+    while true; do
+        clear
+        echo -e "${GREEN}==============================================${NC}"
+        echo -e "        🗑️  Linux Recycle Bin Simulation"
+        echo -e "${GREEN}==============================================${NC}"
+        echo -e "1. Delete file(s)"
+        echo -e "2. List recycle bin"
+        echo -e "3. Restore file"
+        echo -e "4. Search file"
+        echo -e "5. Show statistics"
+        echo -e "6. Auto cleanup"
+        echo -e "7. Check quota"
+        echo -e "8. Empty recycle bin"
+        echo -e "9. Preview file"
+        echo -e "10. Help"
+        echo -e "0. Exit"
+        echo -e "${GREEN}----------------------------------------------${NC}"
+        read -rp "Choose an option: " opt
+
+        case "$opt" in
+            1)
+                read -rp "Enter file(s) to delete (separated by spaces): " files
+                delete_file $files
+                ;;
+            2)
+                read -rp "Detailed mode? (y/n): " det
+                if [[ "$det" == "y" ]]; then
+                    list_recycled --detailed
+                else
+                    list_recycled
+                fi
+                ;;
+            3)
+                read -rp "Enter file ID or name to restore: " id
+                restore_file "$id"
+                ;;
+            4)
+                read -rp "Enter pattern to search: " pattern
+                search_recycled "$pattern"
+                ;;
+            5)
+                show_statistics
+                ;;
+            6)
+                auto_cleanup
+                ;;
+            7)
+                check_quota
+                ;;
+            8)
+                read -rp "Enter ID to delete specific file (leave empty for all): " id
+                empty_recyclebin "$id"
+                ;;
+            9)
+                read -rp "Enter file ID to preview: " id
+                preview_file "$id"
+                ;;
+            10)
+                display_help
+                ;;
+            0)
+                echo -e "${YELLOW}Exiting...${NC}"
+                break
+                ;;
+            *)
+                echo -e "${RED}Invalid option!${NC}"
+                ;;
+        esac
+        echo
+        read -rp "Press ENTER to return to the menu..."
+    done
+}
+
+# ==============================
+# Function: main
 # ==============================
 main() {
+    # Check for verbose flag
+    if [[ "${1:-}" == "--verbose" ]]; then
+        VERBOSE=1
+        shift
+        verbose_echo "Verbose mode activated"
+    fi
+
     initialize_recyclebin
 
-case "${1:-}" in
-    delete) shift; delete_file "$@" ;;
-    list) shift || true; list_recycled "$@" ;;
-    restore) restore_file "${2:-${1:-}}" ;;
-    search) search_recycled "${2:-}" ;;
-    empty) empty_recyclebin "${2:-}" ;;
-    stats|statistics) show_statistics ;;
-    auto_cleanup) auto_cleanup ;;
-    check_quota) check_quota ;;
-    preview) preview_file "${2:-}" ;;
-    help|--help|-h|"") display_help ;;
-    version)
-    echo "Linux Recycle Bin Simulation v1.0"
-    echo "Author(s): [Teu Nome] & [Colega]"
-    echo "Sistemas Operativos 2025/2026 — Universidade de Aveiro"
-    ;;
-    *) echo -e "${RED}Invalid command. Use 'help' for usage.${NC}"; exit 1 ;;
-esac
+    # If no arguments -> open interactive menu
+    if [ $# -eq 0 ]; then
+        main_menu
+        exit 0
+    fi
+
+    case "${1:-}" in
+        delete) shift; delete_file "$@" ;;
+        list) shift || true; list_recycled "$@" ;;
+        restore) restore_file "${2:-${1:-}}" ;;
+        search) search_recycled "${2:-}" ;;
+        empty) empty_recyclebin "${2:-}" ;;
+        stats|statistics) show_statistics ;;
+        auto_cleanup) auto_cleanup ;;
+        check_quota) check_quota ;;
+        preview) preview_file "${2:-}" ;;
+        help|--help|-h) display_help ;;
+        version)
+            echo "Linux Recycle Bin Simulation v1.0"
+            echo "Authors: [Teu Nome] & [Colega]"
+            echo "Sistemas Operativos — Universidade de Aveiro 2025/26"
+            ;;
+        *)
+            echo -e "${RED}Invalid command. Use 'help' for usage.${NC}"
+            ;;
+    esac
 }
 
 main "$@"
