@@ -382,6 +382,7 @@ check_quota() {
     else
         echo -e "${GREEN}Within safe limits.${NC}"
     fi
+
 }
 
 # ==============================
@@ -515,7 +516,10 @@ main() {
     case "${1:-}" in
         delete) shift; delete_file "$@" ;;
         list) shift || true; list_recycled "$@" ;;
-        restore) restore_file "${2:-${1:-}}" ;;
+        restore)
+            shift
+           restore_file "${1:-}"
+           ;;
         search) search_recycled "${2:-}" ;;
         empty) empty_recyclebin "${2:-}" ;;
         stats|statistics) show_statistics ;;
