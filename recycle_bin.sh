@@ -219,30 +219,55 @@ empty_recyclebin() {
 
 # ==============================
 # Function: display_help
-# Description: Show usage
+# Description: Shows usage information
 # ==============================
 display_help() {
-    cat << EOF
-Linux Recycle Bin - Usage Guide
+    cat << 'EOF'
+===============================================================
+🗑️  Linux Recycle Bin Simulation — Help Menu
+===============================================================
 
-Usage: ./recycle_bin.sh <command> [arguments]
+Usage:
+  ./recycle_bin.sh <command> [arguments]
 
 Commands:
-  delete <file> [...]      Move file(s)/directory(ies) to recycle bin
-  list [--detailed]        List contents of recycle bin
-  restore <id|name>        Restore file from recycle bin
-  search <pattern>         Search files by name or path
-  empty [<id>]             Empty recycle bin or delete one file
-  help                     Show this help message
+  ─────────────────────────────────────────────────────────────
+  delete <file(s)>          Move one or more files/directories to recycle bin
+  list [--detailed]         List all items currently in recycle bin
+  restore <id|name>         Restore a file by its unique ID or name
+  search <pattern>          Search for files in recycle bin by name or pattern
+  empty [<id>]              Empty the recycle bin (or delete a specific item)
+
+  stats                     Display overall statistics (total size, count, etc.)
+  auto_cleanup              Remove files older than RETENTION_DAYS (from config)
+  check_quota               Check current recycle bin usage vs MAX_SIZE_MB
+  preview <id>              Preview text content or type of a recycled file
+
+  help | -h | --help        Show this help message
+  version                   Display project version and author info
 
 Examples:
   ./recycle_bin.sh delete file.txt
+  ./recycle_bin.sh delete file1.txt file2.txt
   ./recycle_bin.sh list --detailed
-  ./recycle_bin.sh restore 1696234567_abc123
-  ./recycle_bin.sh search "report"
+  ./recycle_bin.sh restore 1696234567_ab12cd
+  ./recycle_bin.sh search ".pdf"
+  ./recycle_bin.sh stats
+  ./recycle_bin.sh check_quota
+  ./recycle_bin.sh auto_cleanup
+  ./recycle_bin.sh preview 1696234567_ab12cd
   ./recycle_bin.sh empty
+
+Notes:
+  • All operations are logged in ~/.recycle_bin/recyclebin.log
+  • Metadata stored in ~/.recycle_bin/metadata.db
+  • Configurable values (quota and retention) are in ~/.recycle_bin/config
+  • Use quotes when dealing with filenames containing spaces.
+
+===============================================================
 EOF
 }
+
 
 # ==============================
 # Function: show_statistics
