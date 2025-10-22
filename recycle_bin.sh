@@ -245,20 +245,140 @@ EOF
 }
 
 # ==============================
+# Function: show_statistics
+# Description: Display statistics of the recycle bin
+# ==============================
+show_statistics() {
+    echo "=== Recycle Bin Statistics ==="
+    if [ "$(wc -l < "$METADATA_FILE")" -le 1 ]; then
+        echo "No items in recycle bin."
+        return
+    fi
+
+    local total_items total_size files_count dirs_count oldest newest avg_size
+    total_items=$(($(wc -l < "$METADATA_FILE") - 1))
+    total_size=$(tail -n +2 "$METADATA_FILE" | awk -F',' '{sum+=$5} END {print sum}')
+    files_count=$(tail -n +2 "$METADATA_FILE" | grep -c ",file,")
+    dirs_count=$(tail -n +2 "$METADATA_FILE" | grep -c ",directory,")
+    oldest=$(tail -n +2 "$METADATA_FILE" | awk -F',' '{print $4}' | sort | head -n 1)
+    newest=$(tail -n +2 "$METADATA_FILE" | awk -F',' '{print $4}' | sort | tail -n 1)
+    avg_size=$((total_size / total_items))
+
+    echo "Total items: $total_items"
+    echo "Total size: ${total_size} bytes ($(numfmt --to=iec $total_size))"
+    echo "Files: $files_count | Directories: $dirs_count"
+    echo "Oldest deletion: $oldest"
+    echo "Newest deletion: $newest"
+    echo "Average size: ${avg_size} bytes"
+    echo "==============================="
+}
+
+# ==============================
+# Function: auto_cleanup
+# Description: Delete items older than RETENTION_DAYS
+# ==============================
+auto_cleanup() {
+    if [ ! -f "$CONFIG_FILE" ]; then
+        echo -e "${RED}Error: Config file missing${NC}"
+        return 1
+    fi
+
+    local retention
+    retention=$(grep "RETENTION_DAYS" "$CONFIG_FILE" | cut -d'=' -f2)
+    echo "Cleaning up items older than $retention days..."
+
+    local now cutoff
+    now=$(date +%s)
+    tail -n +2 "$METADATA_FILE" | while IFS=',' read -r id name path date size type perms owner; do
+        local timestamp
+        timestamp=$(date -d "$date" +%s 2>/dev/null || echo 0)
+        local diff=$(( (now - timestamp) / 86400 ))
+        if [ "$diff" -gt "$retention" ]; then
+            rm -rf "$FILES_DIR/$id"
+            sed -i "/^$id,/d" "$METADATA_FILE"
+            log_message "Auto-cleanup: Deleted $name (older than $retention days)"
+            echo -e "${YELLOW}Deleted old file:${NC} $name ($diff days old)"
+        fi
+    done
+}
+
+# ==============================
+# Function: check_quota
+# Description: Check if recycle bin exceeds MAX_SIZE_MB
+# ==============================
+check_quota() {
+    if [ ! -f "$CONFIG_FILE" ]; then
+        echo -e "${RED}Error: Config file missing${NC}"
+        return 1
+    fi
+
+    local quota total used_percent
+    quota=$(grep "MAX_SIZE_MB" "$CONFIG_FILE" | cut -d'=' -f2)
+    total=$(du -sm "$FILES_DIR" | awk '{print $1}')
+    used_percent=$((100 * total / quota))
+
+    echo "=== Storage Quota ==="
+    echo "Quota: ${quota} MB"
+    echo "Used: ${total} MB (${used_percent}%)"
+
+    if [ "$total" -ge "$quota" ]; then
+        echo -e "${RED}Warning: Recycle bin exceeds quota!${NC}"
+        echo "Consider running: ./recycle_bin.sh auto_cleanup"
+    else
+        echo -e "${GREEN}Within safe limits.${NC}"
+    fi
+}
+
+# ==============================
+# Function: preview_file
+# Description: Show first 10 lines for text files or type info for others
+# ==============================
+preview_file() {
+    local id="$1"
+    if [ -z "$id" ]; then
+        echo -e "${RED}Error: Provide file ID${NC}"
+        return 1
+    fi
+
+    local line
+    line=$(grep "^$id," "$METADATA_FILE")
+    if [ -z "$line" ]; then
+        echo -e "${RED}No file found with ID $id${NC}"
+        return 1
+    fi
+
+    IFS=',' read -r id name path date size type perms owner <<< "$line"
+    local file="$FILES_DIR/$id"
+
+    echo "=== Preview of $name (type: $type) ==="
+    if file "$file" | grep -q "text"; then
+        head -n 10 "$file"
+    else
+        file "$file"
+    fi
+    echo "==============================="
+}
+
+
+# ==============================
 # Main
 # ==============================
 main() {
     initialize_recyclebin
 
-    case "${1:-}" in
-        delete) shift; delete_file "$@" ;;
-        list) shift || true; list_recycled "$@" ;;
-        restore) restore_file "${2:-${1:-}}" ;;
-        search) search_recycled "${2:-}" ;;
-        empty) empty_recyclebin "${2:-}" ;;
-        help|--help|-h|"") display_help ;;
-        *) echo -e "${RED}Invalid command. Use 'help' for usage.${NC}"; exit 1 ;;
-    esac
+case "${1:-}" in
+    delete) shift; delete_file "$@" ;;
+    list) shift || true; list_recycled "$@" ;;
+    restore) restore_file "${2:-${1:-}}" ;;
+    search) search_recycled "${2:-}" ;;
+    empty) empty_recyclebin "${2:-}" ;;
+    stats|statistics) show_statistics ;;
+    auto_cleanup) auto_cleanup ;;
+    check_quota) check_quota ;;
+    preview) preview_file "${2:-}" ;;
+    help|--help|-h|"") display_help ;;
+    *) echo -e "${RED}Invalid command. Use 'help' for usage.${NC}"; exit 1 ;;
+esac
 }
 
 main "$@"
