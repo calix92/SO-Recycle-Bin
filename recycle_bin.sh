@@ -402,6 +402,11 @@ case "${1:-}" in
     check_quota) check_quota ;;
     preview) preview_file "${2:-}" ;;
     help|--help|-h|"") display_help ;;
+    version)
+    echo "Linux Recycle Bin Simulation v1.0"
+    echo "Author(s): [Teu Nome] & [Colega]"
+    echo "Sistemas Operativos 2025/2026 — Universidade de Aveiro"
+    ;;
     *) echo -e "${RED}Invalid command. Use 'help' for usage.${NC}"; exit 1 ;;
 esac
 }
