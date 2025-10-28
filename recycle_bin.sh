@@ -365,12 +365,12 @@ check_quota() {
         return 1
     fi
 
-    verbose_echo "Quota check: total=${total}MB | limit=${quota}MB"
-
     local quota total used_percent
     quota=$(grep "MAX_SIZE_MB" "$CONFIG_FILE" | cut -d'=' -f2)
     total=$(du -sm "$FILES_DIR" | awk '{print $1}')
     used_percent=$((100 * total / quota))
+
+    verbose_echo "Quota check: total=${total}MB | limit=${quota}MB"
 
     echo "=== Storage Quota ==="
     echo "Quota: ${quota} MB"
@@ -382,8 +382,8 @@ check_quota() {
     else
         echo -e "${GREEN}Within safe limits.${NC}"
     fi
-
 }
+
 
 # ==============================
 # Function: preview_file

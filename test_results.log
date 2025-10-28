@@ -1,7 +1,7 @@
 === Starting Automated Tests ===
 
 --- Recycle bin initialization ---
-[0;32mRecycle bin initialized at /home/calix/.recycle_bin[0m
+[0;32mRecycle bin initialized at /home/ruivo/.recycle_bin[0m
 ===============================================================
 🗑️  Linux Recycle Bin Simulation — Help Menu
 ===============================================================
@@ -50,53 +50,53 @@ Notes:
 :) PASS [2] Recycle bin directory and metadata file exist
 
 --- Delete a single file ---
-[0;32m✓ Moved to recycle bin:[0m file1.txt (ID: 1761155258419383211_fdic0d)
+[0;32m✓ Moved to recycle bin:[0m file1.txt (ID: 1761695087848793661_93z6uh)
 :) PASS [3] File successfully moved to recycle bin
 
 --- Delete multiple files ---
-[0;32m✓ Moved to recycle bin:[0m file2.txt (ID: 1761155258459979094_n0t0v5)
-[0;32m✓ Moved to recycle bin:[0m file3.txt (ID: 1761155258491875336_ojo3qo)
+[0;32m✓ Moved to recycle bin:[0m file2.txt (ID: 1761695087893875164_5deki0)
+[0;32m✓ Moved to recycle bin:[0m file3.txt (ID: 1761695087921603255_0wcku7)
 :) PASS [4] Multiple files moved correctly
 
 --- Delete directory recursively ---
-[0;32m✓ Moved to recycle bin:[0m subdir (ID: 1761155258535659982_kjqn5l)
+[0;32m✓ Moved to recycle bin:[0m subdir (ID: 1761695087970281897_imyrc2)
 :) PASS [5] Directory deleted correctly
 
 --- List recycled contents ---
 ID                        NAME                      DATE                 SIZE(B)   
 --------------------------------------------------------------------------------
-1761155258419383211_      file1.txt                 2025-10-22 18:47:38  7         
-1761155258459979094_      file2.txt                 2025-10-22 18:47:38  0         
-1761155258491875336_      file3.txt                 2025-10-22 18:47:38  0         
-1761155258535659982_      subdir                    2025-10-22 18:47:38  4096      
+1761695087848793661_      file1.txt                 2025-10-28 23:44:47  7         
+1761695087893875164_      file2.txt                 2025-10-28 23:44:47  0         
+1761695087921603255_      file3.txt                 2025-10-28 23:44:47  0         
+1761695087970281897_      subdir                    2025-10-28 23:44:47  4096      
 :) PASS [6] List shows deleted files
 
 --- Show statistics ---
 === Recycle Bin Statistics ===
 Total items: 4
-Total size: 4103 bytes (4,1K)
+Total size: 4103 bytes (4.1K)
 Files: 3 | Directories: 1
-Oldest deletion: 2025-10-22 18:47:38
-Newest deletion: 2025-10-22 18:47:38
+Oldest deletion: 2025-10-28 23:44:47
+Newest deletion: 2025-10-28 23:44:47
 Average size: 1025 bytes
 ===============================
 :) PASS [7] Statistics command working
 
 --- Search deleted file by name ---
 === Search Results for 'file1' ===
-1761155258419383211_      file1.txt                 2025-10-22 18:47:38  7         
+1761695087848793661_      file1.txt                 2025-10-28 23:44:47  7         
 :) PASS [8] Search function returns expected result
 
 --- Restore a file by ID ---
-[0;32m✓ Restored:[0m /home/calix/Secretária/SO/SO-Recycle-Bin/test_data/file1.txt
+[0;32m✓ Restored:[0m /home/ruivo/OneDrive/1 SEMESTRE/SO/Projeto/SO-Recycle-Bin/test_data/file1.txt
 :) PASS [9] File restored successfully
 
 --- Restore with name conflict ---
-[0;32m✓ Restored:[0m /home/calix/Secretária/SO/SO-Recycle-Bin/test_data/file2.txt
+[0;32m✓ Restored:[0m /home/ruivo/OneDrive/1 SEMESTRE/SO/Projeto/SO-Recycle-Bin/test_data/file2.txt
 :) PASS [10] File restored with alternate name on conflict
 
 --- Preview file (text) ---
-[0;32m✓ Moved to recycle bin:[0m file1.txt (ID: 1761155258726747425_smo7ni)
+[0;32m✓ Moved to recycle bin:[0m file1.txt (ID: 1761695088193598598_3mnxev)
 
 --- Preview command ---
 === Preview of file1.txt (type: file) ===
@@ -105,11 +105,14 @@ secret
 :) PASS [11] Preview command shows file content
 
 --- Check storage quota ---
-./recycle_bin.sh: linha 368: total: variável desassociada
-:( FAIL [12] Quota check works
+=== Storage Quota ===
+Quota: 1024 MB
+Used: 1 MB (0%)
+[0;32mWithin safe limits.[0m
+:) PASS [12] Quota check works
 
 --- Auto cleanup old files ---
-./recycle_bin.sh: linha 336: retention: variável desassociada
+./recycle_bin.sh: line 336: retention: unbound variable
 :) PASS [13] Old file cleaned automatically
 
 --- Empty recycle bin (auto confirm) ---
