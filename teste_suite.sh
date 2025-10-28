@@ -1,7 +1,7 @@
 #!/bin/bash
 # ================================================================
 # Automated Test Suite for Linux Recycle Bin Simulation
-# Author: [Your Name]
+# Author: Dacid Cálix // DIogo Ruivo
 # Date: 2025-10-22
 # ================================================================
 
