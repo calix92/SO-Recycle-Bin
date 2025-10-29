@@ -42,7 +42,7 @@ Cada operação é modular e implementada como função Bash independente.
 **Saídas:** Execução das funções selecionadas  
 **Complexidade:** O(n) (n = número de opções)
 
-![Fluxograma main_menu](fluxogramas/main_menu().drawio.png)
+![Fluxograma main_menu](fluxogramas/main_menu().png)
 
 ---
 
@@ -72,7 +72,7 @@ Cada operação é modular e implementada como função Bash independente.
 
 **Complexidade:** O(1)
 
-![Fluxograma generate_unique_id](fluxogramas/generate_unique_id().drawio.png)
+![Fluxograma generate_unique_id](fluxogramas/generate_unique_id().png)
 
 ---
 
@@ -97,7 +97,7 @@ Cada operação é modular e implementada como função Bash independente.
 
 **Complexidade:** O(n), n = número de ficheiros  
 
-![Fluxograma delete_file](fluxogramas/delete_file().drawio.png)
+![Fluxograma delete_file](fluxogramas/delete_file().png)
 
 ---
 
@@ -111,7 +111,7 @@ Cada operação é modular e implementada como função Bash independente.
 
 **Complexidade:** O(n)  
 
-![Fluxograma list_recycled](fluxogramas/list_recycled().drawio.png)
+![Fluxograma list_recycled](fluxogramas/list_recycled().png)
 
 ---
 
@@ -126,7 +126,7 @@ Cada operação é modular e implementada como função Bash independente.
 
 **Complexidade:** O(n)  
 
-![Fluxograma restore_file](fluxogramas/restore_file().drawio.png)
+![Fluxograma restore_file](fluxogramas/restore_file().png)
 
 ---
 
@@ -137,7 +137,7 @@ Cada operação é modular e implementada como função Bash independente.
 
 **Complexidade:** O(n)
 
-![Fluxograma search_recycled](fluxogramas/search_recycled().drawio.png)
+![Fluxograma search_recycled](fluxogramas/search_recycled().png)
 
 ---
 
@@ -149,7 +149,7 @@ Cada operação é modular e implementada como função Bash independente.
 - Se confirmado, remove todos os ficheiros da pasta `files/` e recria o cabeçalho do `metadata.db`.  
 - Regista a operação no log.
 
-![Fluxograma empty_recyclebin](fluxogramas/empty_recyclebin().drawio.png)
+![Fluxograma empty_recyclebin](fluxogramas/empty_recyclebin().png)
 
 ---
 
@@ -163,7 +163,7 @@ Cada operação é modular e implementada como função Bash independente.
 - Média de tamanho  
 - Datas mais antiga e mais recente  
 
-![Fluxograma show_statistics](fluxogramas/show_statistics().drawio.png)
+![Fluxograma show_statistics](fluxogramas/show_statistics().png)
 
 ---
 
@@ -175,7 +175,7 @@ Cada operação é modular e implementada como função Bash independente.
 - Percorre o `metadata.db` e compara a data de eliminação com a data atual.  
 - Remove entradas antigas e atualiza o log.
 
-![Fluxograma auto_cleanup](fluxogramas/auto_cleanup().drawio.png)
+![Fluxograma auto_cleanup](fluxogramas/auto_cleanup().png)
 
 ---
 
@@ -187,7 +187,7 @@ Cada operação é modular e implementada como função Bash independente.
 - Mostra percentagem de uso.  
 - Caso ultrapasse, alerta o utilizador e sugere `auto_cleanup`.
 
-![Fluxograma check_quota](fluxogramas/check_quota().drawio.png)
+![Fluxograma check_quota](fluxogramas/check_quota().png)
 
 ---
 
@@ -199,7 +199,7 @@ Cada operação é modular e implementada como função Bash independente.
 - Se for texto → mostra as primeiras 10 linhas (`head -n 10`).  
 - Caso contrário → mostra o tipo MIME.
 
-![Fluxograma preview_file](fluxogramas/preview_file().drawio.png)
+![Fluxograma preview_file](fluxogramas/preview_file().png)
 
 ---
 
@@ -212,7 +212,7 @@ Cada operação é modular e implementada como função Bash independente.
 
 **Complexidade:** O(1)
 
-![Fluxograma display_help](fluxogramas/display_help().drawio.png)
+![Fluxograma display_help](fluxogramas/display_help().png)
 
 ---
 
@@ -225,7 +225,7 @@ Cada operação é modular e implementada como função Bash independente.
 
 **Complexidade:** O(1)
 
-![Fluxograma verbose_echo](fluxogramas/verbose_echo().drawio.png)
+![Fluxograma verbose_echo](fluxogramas/verbose_echo().png)
 
 ---
 
@@ -239,7 +239,7 @@ Cada operação é modular e implementada como função Bash independente.
 
 **Complexidade:** O(1)
 
-![Fluxograma log_message](fluxogramas/log_message().drawio.png)
+![Fluxograma log_message](fluxogramas/log_message().png)
 
 ---
 
