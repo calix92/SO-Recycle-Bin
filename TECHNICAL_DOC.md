@@ -2,7 +2,7 @@
 
 ## 📘 Introdução
 
-O projeto **Linux Recycle Bin Simulation** implementa uma simulação funcional da Reciclagem do Windows, desenvolvida em **Bash** no âmbito da unidade curricular **Sistemas Operativos (SO-2526)**.
+
 
 O sistema permite mover ficheiros para uma área segura de reciclagem, restaurá-los, removê-los permanentemente e consultar metadados e estatísticas.  
 Todo o comportamento é reproduzido através de **operações de sistema de ficheiros**, **tratamento de erros** e **gestão de dados persistentes (CSV)**.
@@ -231,19 +231,6 @@ Cada função devolve **código 0 (sucesso)** ou **1 (erro)**, permitindo automa
 
 ---
 
-## 🧮 Complexidade Global
-
-| Categoria | Complexidade |
-|------------|---------------|
-| Inicialização e Configuração | O(1) |
-| Deleção e Restauro | O(n) |
-| Pesquisa e Listagem | O(n) |
-| Estatísticas | O(n) |
-| Auto-cleanup e Quota | O(n) |
-| Pré-visualização | O(1) |
-
----
-
 ## 📊 Conclusões
 
 O projeto implementa um sistema de reciclagem modular, robusto e seguro.  
@@ -259,6 +246,5 @@ Todas as funções cumprem os requisitos do guião, com:
 
 ## ✍️ Autores
 
-- [Teu Nome]  
-- [Colega de Grupo]  
-- Universidade de Aveiro — Sistemas Operativos 2025/2026
+- Diogo Ruivo
+- David Cálix

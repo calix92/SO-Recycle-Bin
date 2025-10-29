@@ -4,7 +4,6 @@
 # Author: David Cálix & Diogo Ruivo
 # Date: 2025-10-22
 # Description: Shell-based recycle bin system for Sistemas Operativos (SO-2526)
-# Version: 1.0
 #################################################
 
 # ==============================
@@ -245,7 +244,7 @@ empty_recyclebin() {
 display_help() {
     cat << 'EOF'
 ===============================================================
-🗑️  Linux Recycle Bin Simulation — Help Menu
+ Linux Recycle Bin Simulation — Help Menu
 ===============================================================
 
 Usage:
