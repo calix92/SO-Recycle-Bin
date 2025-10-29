@@ -6,13 +6,13 @@ Cada operação é modular e implementada como função Bash independente.
 
 ---
 
-## 🧩 Fluxograma Geral do Programa
+##  Fluxograma Geral do Programa
 
 ![Fluxograma main](fluxogramas/main().png)
 
 ---
 
-## 🔧 Descrição Técnica das Funções
+##  Descrição Técnica das Funções
 
 ### 1. `main()`
 
@@ -243,7 +243,7 @@ Cada operação é modular e implementada como função Bash independente.
 
 ---
 
-## 🧠 Estrutura de Dados
+##  Estrutura de Dados
 
 O ficheiro `metadata.db` atua como uma **base de dados CSV**, onde cada linha representa um ficheiro eliminado.  
 O formato é:
@@ -256,7 +256,7 @@ Exemplo:
 
 ---
 
-## 🧩 Módulos Auxiliares
+##  Módulos Auxiliares
 
 ### Ficheiro `config`
 - **MAX_SIZE_MB** — tamanho máximo da reciclagem  
@@ -268,7 +268,7 @@ Exemplo:
 
 ---
 
-## ⚠️ Tratamento de Erros
+##  Tratamento de Erros
 
 O sistema deteta e trata as seguintes situações:
 - Ficheiro inexistente ou sem permissões  
@@ -281,7 +281,7 @@ Cada função devolve **código 0 (sucesso)** ou **1 (erro)**, permitindo automa
 
 ---
 
-## 📊 Conclusões
+##  Conclusões
 
 O projeto implementa um sistema de reciclagem modular, robusto e seguro.  
 Todas as funções cumprem os requisitos do guião, com:
@@ -292,7 +292,7 @@ Todas as funções cumprem os requisitos do guião, com:
 
 ---
 
-## ✍️ Autores
+##  Autores
 
 - **Diogo Ruivo**  
 - **David Cálix**
