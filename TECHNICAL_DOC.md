@@ -6,9 +6,9 @@ Cada operação é modular e implementada como função Bash independente.
 
 ---
 
-##  Fluxograma Geral do Programa
+##  Arquitetura Geral do Sistema
 
-![Fluxograma main](fluxogramas/main().png)
+![Arquitetura Geral](fluxogramas/arquitetura_geral.png)
 
 ---
 
