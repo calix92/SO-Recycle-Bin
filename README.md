@@ -164,7 +164,7 @@ Demonstrates stability under load: handles hundreds of files, large-size simulat
 
 ---
 
-## Troubleshooting Guide
+## Known Issues
 
 | Problem | Cause | Solution |
 |----------|--------|-----------|
@@ -176,6 +176,18 @@ Demonstrates stability under load: handles hundreds of files, large-size simulat
 | **Quota warning shown** | Recycle bin reached size limit | Run `./recycle_bin.sh auto_cleanup` to remove old files |
 | **Strange characters in names** | Locale or encoding issue | Use `LC_ALL=C` when running the script if needed |
 | **Test suite not running** | Missing execution rights | Run `chmod +x test_suite.sh` before executing it |
+
+---
+
+## Limitations
+
+Although the system covers all functional requirements, some limitations remain:
+
+- The recycle bin is local to each user (no multi-user synchronization).  
+- The `metadata.db` file is CSV-based, not SQL — suitable for simplicity but limited for large-scale operations.  
+- File preview is only available for text-based formats.  
+- No graphical interface (CLI only).  
+- Quota and retention policies depend on manual configuration.
 
 ---
 
@@ -205,6 +217,13 @@ Main achievements:
 5. Production of professional documentation covering technical, testing, and user perspectives.
 
 The Linux Recycle Bin project demonstrates a solid understanding of software structure, testing, and documentation principles, meeting all objectives of the Operating Systems course until now.
+
+---
+
+## Version and License
+
+Version 1.0 — October 2025  
+Licensed under the MIT License
 
 ---
 

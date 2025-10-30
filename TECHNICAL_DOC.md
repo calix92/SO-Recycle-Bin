@@ -1,4 +1,3 @@
-
 **Ficheiro principal:** `recycle_bin.sh`  
 **Ficheiros de apoio:** `test_suite.sh`, `README.md`, `TECHNICAL_DOC.md`, `TESTING.md`
 
