@@ -1,7 +1,7 @@
 #!/bin/bash
 # ================================================================
 # FULL 36-TEST AUTOMATED SUITE — Linux Recycle Bin Simulation
-# Authors: David Cálix & Diogo Ruivo
+# Authors: David Cálix (125043) & Diogo Ruivo (126498) 
 # Date: 2025-10-29
 # Notes:
 # - Uses ./recycle_bin.sh (must be in same folder)

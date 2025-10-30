@@ -1,7 +1,7 @@
 #!/bin/bash
 #################################################
 # Linux Recycle Bin Simulation
-# Author: David Cálix & Diogo Ruivo
+# Author: David Cálix (125043) & Diogo Ruivo (126498)
 # Date: 2025-10-22
 # Description: Shell-based recycle bin system for Sistemas Operativos (SO-2526)
 #################################################

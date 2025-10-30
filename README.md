@@ -1,8 +1,8 @@
 # Linux Recycle Bin — README.md
 
 ## Author
-Diogo Ruivo (126498)  
-David Cálix (125043)  
+David Cálix (125043)
+Diogo Ruivo (126498)   
 University of Aveiro — Operating Systems (2025/2026)
 
 ---

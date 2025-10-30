@@ -293,5 +293,5 @@ Todas as funções cumprem os requisitos do guião, com:
 
 ##  Autores
 
-- **Diogo Ruivo**  
-- **David Cálix**
+- **David Cálix (125043)**
+- **Diogo Ruivo (126498)**
