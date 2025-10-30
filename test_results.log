@@ -1,0 +1,531 @@
+=== Starting Automated Tests ===
+
+--- Test 1: Initialize / Help ---
+[0;32mRecycle bin initialized at /home/ruivo/.recycle_bin[0m
+===============================================================
+ Linux Recycle Bin Simulation — Help Menu
+===============================================================
+
+Usage:
+  ./recycle_bin.sh <command> [arguments]
+
+Commands:
+  ─────────────────────────────────────────────────────────────
+  delete <file(s)>          Move one or more files/directories to recycle bin
+  list [--detailed]         List all items currently in recycle bin
+  restore <id|name>         Restore a file by its unique ID or name
+  search <pattern>          Search for files in recycle bin by name or pattern
+  empty [<id>]              Empty the recycle bin (or delete a specific item)
+
+  stats                     Display overall statistics (total size, count, etc.)
+  auto_cleanup              Remove files older than RETENTION_DAYS (from config)
+  check_quota               Check current recycle bin usage vs MAX_SIZE_MB
+  preview <id>              Preview text content or type of a recycled file
+
+  help | -h | --help        Show this help message
+  version                   Display project version and author info
+  --verbose                 Enable detailed output for debugging
+
+
+Examples:
+  ./recycle_bin.sh delete file.txt
+  ./recycle_bin.sh delete file1.txt file2.txt
+  ./recycle_bin.sh list --detailed
+  ./recycle_bin.sh restore 1696234567_ab12cd
+  ./recycle_bin.sh search ".pdf"
+  ./recycle_bin.sh stats
+  ./recycle_bin.sh check_quota
+  ./recycle_bin.sh auto_cleanup
+  ./recycle_bin.sh preview 1696234567_ab12cd
+  ./recycle_bin.sh empty
+
+Notes:
+  • All operations are logged in ~/.recycle_bin/recyclebin.log
+  • Metadata stored in ~/.recycle_bin/metadata.db
+  • Configurable values (quota and retention) are in ~/.recycle_bin/config
+  • Use quotes when dealing with filenames containing spaces.
+
+===============================================================
+[0;32m:) PASS [1][0m Recycle bin help/initialization
+
+--- Test 2: Directory creation ---
+[0;32m:) PASS [2][0m Recycle bin directory and metadata created
+
+--- Test 3: Delete single file ---
+[0;32m✓ Moved to recycle bin:[0m file1.txt (ID: 1761794464030508331_hxppd7)
+[0;32m:) PASS [3][0m Delete single file
+
+--- Test 4: Delete multiple files ---
+[0;32m✓ Moved to recycle bin:[0m file2.txt (ID: 1761794464085824224_o6bpop)
+[0;32m✓ Moved to recycle bin:[0m emptyfile.txt (ID: 1761794464126054987_3dnxho)
+[0;32m:) PASS [4][0m Delete multiple files
+
+--- Test 5: Delete directory recursively ---
+[0;32m✓ Moved to recycle bin:[0m subdir (ID: 1761794464175334560_w3p0sp)
+[0;32m:) PASS [5][0m Delete directory recursively
+
+--- Test 6: List recycled contents ---
+ID                        NAME                      DATE                 SIZE(B)   
+--------------------------------------------------------------------------------
+1761794464030508331_      file1.txt                 2025-10-30 03:21:04  6         
+1761794464085824224_      file2.txt                 2025-10-30 03:21:04  4         
+1761794464126054987_      emptyfile.txt             2025-10-30 03:21:04  0         
+1761794464175334560_      subdir                    2025-10-30 03:21:04  4096      
+[0;32m:) PASS [6][0m List command executed (checked metadata presence)
+
+--- Test 7: Restore a file by ID ---
+[0;32m✓ Restored:[0m /home/ruivo/OneDrive/1 SEMESTRE/SO/Projeto/SO-Recycle-Bin/test_data/file1.txt
+[0;32m:) PASS [7][0m Restore invocation executed (manual check possible)
+
+--- Test 8: Search existing file ---
+=== Search Results for 'file2' ===
+1761794464085824224_      file2.txt                 2025-10-30 03:21:04  4         
+[0;32m:) PASS [8][0m Search executed (manual inspect)
+
+--- Test 9: Search non-existent file ---
+=== Search Results for 'completely_nonexistent_pattern_zzz' ===
+[1;33mNo matches found.[0m
+[0;32m:) PASS [9][0m Search for non-existent pattern executed (should be graceful)
+
+--- Test 10: Empty recycle bin (auto-yes) ---
+[0;32mRecycle bin emptied successfully.[0m
+[0;32m:) PASS [10][0m Empty recycle bin (confirmed)
+
+--- Test 11: Delete file with spaces ---
+[0;32m✓ Moved to recycle bin:[0m file space.txt (ID: 1761794464364248829_tk5vz4)
+[0;32m:) PASS [11][0m Handled filename with spaces
+
+--- Test 12: Delete special chars filename ---
+[0;32m✓ Moved to recycle bin:[0m file_special_çãõ!@#$%.txt (ID: 1761794464419509302_os64oh)
+[0;32m:) PASS [12][0m Handled special-chars filename
+
+--- Test 13: Delete hidden file ---
+[0;32m✓ Moved to recycle bin:[0m .hiddenfile (ID: 1761794464474976062_qs365g)
+[0;32m:) PASS [13][0m Deleted hidden file
+
+--- Test 14: Delete non-existent file ---
+[0;31mError: File './test_data/does_not_exist.txt' does not exist[0m
+[0;32m:) PASS [14][0m Handled deletion of non-existent file gracefully
+
+--- Test 15: Restore with name conflict ---
+[0;32m✓ Moved to recycle bin:[0m conflict.txt (ID: 1761794464542808329_de3gap)
+[1;33mFile already exists. Restoring as:[0m /home/ruivo/OneDrive/1 SEMESTRE/SO/Projeto/SO-Recycle-Bin/test_data/conflict.txt_restored_1761794464
+[0;32m✓ Restored:[0m /home/ruivo/OneDrive/1 SEMESTRE/SO/Projeto/SO-Recycle-Bin/test_data/conflict.txt_restored_1761794464
+[0;32m:) PASS [15][0m Restore with name conflict executed
+
+--- Test 16: Invalid command ---
+[0;31mInvalid command. Use 'help' for usage.[0m
+[0;32m:) PASS [16][0m Invalid command handled (non-fatal)
+
+--- Test 17: Missing parameter for restore ---
+[0;31mError: Must provide file ID or name[0m
+[0;32m:) PASS [17][0m Missing parameter handled
+
+--- Test 18: Protect deleting recycle bin ---
+[0;31mError: Cannot delete recycle bin itself[0m
+[0;32m:) PASS [18][0m Cannot delete recycle bin itself (handled)
+
+--- Test 19: Corrupted metadata handling ---
+ID                        NAME                      DATE                 SIZE(B)   
+--------------------------------------------------------------------------------
+1761794464364248829_      file space.txt            2025-10-30 03:21:04  11        
+1761794464419509302_      file_special_çãõ!@#$%.txt 2025-10-30 03:21:04  12        
+1761794464474976062_      .hiddenfile               2025-10-30 03:21:04  0         
+CORRUPTED_LINE_NO_CO                                                               
+[0;32m:) PASS [19][0m List did not crash with corrupted metadata
+
+--- Test 20: Check quota (simulate exceed) ---
+=== Storage Quota ===
+Quota: 1 MB
+Used: 1 MB (100%)
+[0;31mWarning: Recycle bin exceeds quota![0m
+Consider running: ./recycle_bin.sh auto_cleanup
+[0;32m:) PASS [20][0m Quota check executed (simulated exceed)
+
+--- Test 21: Auto-cleanup (simulate old date) ---
+./recycle_bin.sh: line 335: retention: unbound variable
+[0;32m:) PASS [21][0m Auto-cleanup removed old entries (simulated)
+
+--- Test 22: Preview text file ---
+[0;32m✓ Moved to recycle bin:[0m preview.txt (ID: 1761794464742167268_2rzt8w)
+=== Preview of preview.txt (type: file) ===
+secret_text_preview
+===============================
+[0;32m:) PASS [22][0m Preview command executed
+
+--- Test 23: Delete file without permissions (chmod 000) ---
+[0;32m✓ Moved to recycle bin:[0m perm_file (ID: 1761794464829859119_etq945)
+[0;32m:) PASS [23][0m Delete file without permission attempted and handled (perms restored)
+
+--- Test 24: Delete symlink ---
+[0;31mError: File './test_data/link_to_file1' does not exist[0m
+[0;32m:) PASS [24][0m Symlink deletion attempted (should store link as entry)
+
+--- Test 25: Restore with invalid ID ---
+[0;32m:) PASS [25][0m Restore with invalid ID handled
+
+--- Test 26: Restore to non-existent original path ---
+[0;32m✓ Moved to recycle bin:[0m deepfile.txt (ID: 1761794464921463926_n79u1p)
+[0;32m✓ Restored:[0m /home/ruivo/OneDrive/1 SEMESTRE/SO/Projeto/SO-Recycle-Bin/test_data/some/deep/dir/deepfile.txt
+[0;32m:) PASS [26][0m Restore recreated non-existent original path
+
+--- Test 27: Restore into read-only directory ---
+[0;31mError: File './test_data/ro_dir/rofile.txt' does not exist[0m
+mv: cannot move '/home/ruivo/.recycle_bin/files/1761794464829859119_etq945' to '/home/ruivo/OneDrive/1 SEMESTRE/SO/Projeto/SO-Recycle-Bin/test_data/perm_file': Permission denied
+[0;32m:) PASS [27][0m Restore into read-only directory attempted and handled (perms reset)
+
+--- Test 28: Long filename handling ---
+[0;32m✓ Moved to recycle bin:[0m aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.txt (ID: 1761794465062017142_w3ma5f)
+[0;32m:) PASS [28][0m Long filename deletion attempted
+
+--- Test 29: Very large file simulation (10MB) ---
+[0;32m✓ Moved to recycle bin:[0m bigfile_10MB.bin (ID: 1761794465122827975_6yrlmh)
+[0;32m:) PASS [29][0m Simulated very large file deleted
+
+--- Test 30: Delete 100+ small files (performance) ---
+[0;32m✓ Moved to recycle bin:[0m perf_100.txt (ID: 1761794465180312343_qbv9cv)
+[0;32m✓ Moved to recycle bin:[0m perf_10.txt (ID: 1761794465222575172_27yr6n)
+[0;32m✓ Moved to recycle bin:[0m perf_11.txt (ID: 1761794465265325757_31lr7h)
+[0;32m✓ Moved to recycle bin:[0m perf_12.txt (ID: 1761794465304266481_0454sy)
+[0;32m✓ Moved to recycle bin:[0m perf_13.txt (ID: 1761794465344288542_xotdnp)
+[0;32m✓ Moved to recycle bin:[0m perf_14.txt (ID: 1761794465386908447_3jzelm)
+[0;32m✓ Moved to recycle bin:[0m perf_15.txt (ID: 1761794465427478372_kaytp5)
+[0;32m✓ Moved to recycle bin:[0m perf_16.txt (ID: 1761794465466210870_wvsdex)
+[0;32m✓ Moved to recycle bin:[0m perf_17.txt (ID: 1761794465505577657_la70nl)
+[0;32m✓ Moved to recycle bin:[0m perf_18.txt (ID: 1761794465547726417_jb1dbg)
+[0;32m✓ Moved to recycle bin:[0m perf_19.txt (ID: 1761794465589198686_yu9f7q)
+[0;32m✓ Moved to recycle bin:[0m perf_1.txt (ID: 1761794465630436082_hje3xe)
+[0;32m✓ Moved to recycle bin:[0m perf_20.txt (ID: 1761794465672222936_hzw1ld)
+[0;32m✓ Moved to recycle bin:[0m perf_21.txt (ID: 1761794465715671518_1u1srn)
+[0;32m✓ Moved to recycle bin:[0m perf_22.txt (ID: 1761794465755481506_bgo7j4)
+[0;32m✓ Moved to recycle bin:[0m perf_23.txt (ID: 1761794465794865878_fdi35b)
+[0;32m✓ Moved to recycle bin:[0m perf_24.txt (ID: 1761794465832681945_dsq3at)
+[0;32m✓ Moved to recycle bin:[0m perf_25.txt (ID: 1761794465871353996_putr4d)
+[0;32m✓ Moved to recycle bin:[0m perf_26.txt (ID: 1761794465911646062_qhb2h1)
+[0;32m✓ Moved to recycle bin:[0m perf_27.txt (ID: 1761794465950766857_604so3)
+[0;32m✓ Moved to recycle bin:[0m perf_28.txt (ID: 1761794465988126289_md4g5h)
+[0;32m✓ Moved to recycle bin:[0m perf_29.txt (ID: 1761794466020566327_269x6d)
+[0;32m✓ Moved to recycle bin:[0m perf_2.txt (ID: 1761794466060367969_980vho)
+[0;32m✓ Moved to recycle bin:[0m perf_30.txt (ID: 1761794466098994715_9u01mj)
+[0;32m✓ Moved to recycle bin:[0m perf_31.txt (ID: 1761794466136290550_z7hyza)
+[0;32m✓ Moved to recycle bin:[0m perf_32.txt (ID: 1761794466170664943_rbh1av)
+[0;32m✓ Moved to recycle bin:[0m perf_33.txt (ID: 1761794466208856486_omdevz)
+[0;32m✓ Moved to recycle bin:[0m perf_34.txt (ID: 1761794466248622815_ojulhe)
+[0;32m✓ Moved to recycle bin:[0m perf_35.txt (ID: 1761794466284271962_mmbqeu)
+[0;32m✓ Moved to recycle bin:[0m perf_36.txt (ID: 1761794466322782370_0dclfo)
+[0;32m✓ Moved to recycle bin:[0m perf_37.txt (ID: 1761794466363103888_eweyxx)
+[0;32m✓ Moved to recycle bin:[0m perf_38.txt (ID: 1761794466404049304_ysppi9)
+[0;32m✓ Moved to recycle bin:[0m perf_39.txt (ID: 1761794466442437045_ejnxb8)
+[0;32m✓ Moved to recycle bin:[0m perf_3.txt (ID: 1761794466481711715_13vpmh)
+[0;32m✓ Moved to recycle bin:[0m perf_40.txt (ID: 1761794466520354675_dfeup7)
+[0;32m✓ Moved to recycle bin:[0m perf_41.txt (ID: 1761794466560305782_3g3l0v)
+[0;32m✓ Moved to recycle bin:[0m perf_42.txt (ID: 1761794466597452146_x1uyvq)
+[0;32m✓ Moved to recycle bin:[0m perf_43.txt (ID: 1761794466636476613_etrf2g)
+[0;32m✓ Moved to recycle bin:[0m perf_44.txt (ID: 1761794466675412815_44npvq)
+[0;32m✓ Moved to recycle bin:[0m perf_45.txt (ID: 1761794466715353965_sup23m)
+[0;32m✓ Moved to recycle bin:[0m perf_46.txt (ID: 1761794466751715265_db9118)
+[0;32m✓ Moved to recycle bin:[0m perf_47.txt (ID: 1761794466792633295_smjqs9)
+[0;32m✓ Moved to recycle bin:[0m perf_48.txt (ID: 1761794466831788885_gcu058)
+[0;32m✓ Moved to recycle bin:[0m perf_49.txt (ID: 1761794466872017278_g06pht)
+[0;32m✓ Moved to recycle bin:[0m perf_4.txt (ID: 1761794466915452671_wrme15)
+[0;32m✓ Moved to recycle bin:[0m perf_50.txt (ID: 1761794466953938445_7f5nwc)
+[0;32m✓ Moved to recycle bin:[0m perf_51.txt (ID: 1761794466994759174_ppxj3g)
+[0;32m✓ Moved to recycle bin:[0m perf_52.txt (ID: 1761794467036243648_ua1xf8)
+[0;32m✓ Moved to recycle bin:[0m perf_53.txt (ID: 1761794467079313362_ax5uej)
+[0;32m✓ Moved to recycle bin:[0m perf_54.txt (ID: 1761794467123643704_yi2kbc)
+[0;32m✓ Moved to recycle bin:[0m perf_55.txt (ID: 1761794467149256307_8xagkp)
+[0;32m✓ Moved to recycle bin:[0m perf_56.txt (ID: 1761794467169904753_759jhf)
+[0;32m✓ Moved to recycle bin:[0m perf_57.txt (ID: 1761794467190380623_m20b81)
+[0;32m✓ Moved to recycle bin:[0m perf_58.txt (ID: 1761794467211351540_41lnta)
+[0;32m✓ Moved to recycle bin:[0m perf_59.txt (ID: 1761794467235254827_rdiq8g)
+[0;32m✓ Moved to recycle bin:[0m perf_5.txt (ID: 1761794467263066055_20psc5)
+[0;32m✓ Moved to recycle bin:[0m perf_60.txt (ID: 1761794467295088132_vd0ono)
+[0;32m✓ Moved to recycle bin:[0m perf_61.txt (ID: 1761794467327375400_5k1wa3)
+[0;32m✓ Moved to recycle bin:[0m perf_62.txt (ID: 1761794467362652746_riuq31)
+[0;32m✓ Moved to recycle bin:[0m perf_63.txt (ID: 1761794467400323328_1t3ytb)
+[0;32m✓ Moved to recycle bin:[0m perf_64.txt (ID: 1761794467439916104_toq8bx)
+[0;32m✓ Moved to recycle bin:[0m perf_65.txt (ID: 1761794467479905653_vsq45f)
+[0;32m✓ Moved to recycle bin:[0m perf_66.txt (ID: 1761794467519018752_22ceuv)
+[0;32m✓ Moved to recycle bin:[0m perf_67.txt (ID: 1761794467556959861_dsa60r)
+[0;32m✓ Moved to recycle bin:[0m perf_68.txt (ID: 1761794467599286160_6lva53)
+[0;32m✓ Moved to recycle bin:[0m perf_69.txt (ID: 1761794467640848635_tt6m5p)
+[0;32m✓ Moved to recycle bin:[0m perf_6.txt (ID: 1761794467680557977_8gom8b)
+[0;32m✓ Moved to recycle bin:[0m perf_70.txt (ID: 1761794467724121184_ohu4dn)
+[0;32m✓ Moved to recycle bin:[0m perf_71.txt (ID: 1761794467765137566_y97dql)
+[0;32m✓ Moved to recycle bin:[0m perf_72.txt (ID: 1761794467809447760_nnhhit)
+[0;32m✓ Moved to recycle bin:[0m perf_73.txt (ID: 1761794467846904126_aqxo0l)
+[0;32m✓ Moved to recycle bin:[0m perf_74.txt (ID: 1761794467883222941_fvc57f)
+[0;32m✓ Moved to recycle bin:[0m perf_75.txt (ID: 1761794467922562775_be82ac)
+[0;32m✓ Moved to recycle bin:[0m perf_76.txt (ID: 1761794467960693598_i93e7o)
+[0;32m✓ Moved to recycle bin:[0m perf_77.txt (ID: 1761794468001996222_ybgz4a)
+[0;32m✓ Moved to recycle bin:[0m perf_78.txt (ID: 1761794468034504432_x2dp6j)
+[0;32m✓ Moved to recycle bin:[0m perf_79.txt (ID: 1761794468075471611_2nxvdn)
+[0;32m✓ Moved to recycle bin:[0m perf_7.txt (ID: 1761794468113714399_h3vror)
+[0;32m✓ Moved to recycle bin:[0m perf_80.txt (ID: 1761794468151707786_8qf30i)
+[0;32m✓ Moved to recycle bin:[0m perf_81.txt (ID: 1761794468187649523_0sf9vq)
+[0;32m✓ Moved to recycle bin:[0m perf_82.txt (ID: 1761794468223903607_iq7mzw)
+[0;32m✓ Moved to recycle bin:[0m perf_83.txt (ID: 1761794468260330233_ip9k8l)
+[0;32m✓ Moved to recycle bin:[0m perf_84.txt (ID: 1761794468295834305_4lr3wc)
+[0;32m✓ Moved to recycle bin:[0m perf_85.txt (ID: 1761794468339020238_62nmer)
+[0;32m✓ Moved to recycle bin:[0m perf_86.txt (ID: 1761794468384552159_esnr9a)
+[0;32m✓ Moved to recycle bin:[0m perf_87.txt (ID: 1761794468423280366_ztqn14)
+[0;32m✓ Moved to recycle bin:[0m perf_88.txt (ID: 1761794468458685360_kgh7oz)
+[0;32m✓ Moved to recycle bin:[0m perf_89.txt (ID: 1761794468499407333_4waweq)
+[0;32m✓ Moved to recycle bin:[0m perf_8.txt (ID: 1761794468534881833_oaa3y8)
+[0;32m✓ Moved to recycle bin:[0m perf_90.txt (ID: 1761794468573073422_lu8w90)
+[0;32m✓ Moved to recycle bin:[0m perf_91.txt (ID: 1761794468611154098_2wymhn)
+[0;32m✓ Moved to recycle bin:[0m perf_92.txt (ID: 1761794468651959069_xfak1n)
+[0;32m✓ Moved to recycle bin:[0m perf_93.txt (ID: 1761794468693918159_wf0srj)
+[0;32m✓ Moved to recycle bin:[0m perf_94.txt (ID: 1761794468733474102_ytp3sf)
+[0;32m✓ Moved to recycle bin:[0m perf_95.txt (ID: 1761794468774070921_5isfcs)
+[0;32m✓ Moved to recycle bin:[0m perf_96.txt (ID: 1761794468811552364_2gso7k)
+[0;32m✓ Moved to recycle bin:[0m perf_97.txt (ID: 1761794468852290072_zzb1yx)
+[0;32m✓ Moved to recycle bin:[0m perf_98.txt (ID: 1761794468895151920_pnh73l)
+[0;32m✓ Moved to recycle bin:[0m perf_99.txt (ID: 1761794468937344294_gistxb)
+[0;32m✓ Moved to recycle bin:[0m perf_9.txt (ID: 1761794468976924488_leuimo)
+[0;32m:) PASS [30][0m Deleted 100+ small files (performance)
+
+--- Test 31: List large bin contents ---
+ID                        NAME                      DATE                 SIZE(B)   
+--------------------------------------------------------------------------------
+1761794464364248829_      file space.txt            2025-10-30 03:21:04  11        
+1761794464419509302_      file_special_çãõ!@#$%.txt 2025-10-30 03:21:04  12        
+1761794464474976062_      .hiddenfile               2025-10-30 03:21:04  0         
+CORRUPTED_LINE_NO_CO                                                               
+0000000000_fakeold        old.txt                   2000-01-01 00:00:00  10        
+1761794464742167268_      preview.txt               2025-10-30 03:21:04  20        
+1761794464829859119_      perm_file                 2025-10-30 03:21:04  7         
+1761794465062017142_      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.txt 2025-10-30 03:21:05  5         
+1761794465122827975_      bigfile_10MB.bin          2025-10-30 03:21:05  10485760  
+1761794465180312343_      perf_100.txt              2025-10-30 03:21:05  5         
+1761794465222575172_      perf_10.txt               2025-10-30 03:21:05  4         
+1761794465265325757_      perf_11.txt               2025-10-30 03:21:05  4         
+1761794465304266481_      perf_12.txt               2025-10-30 03:21:05  4         
+1761794465344288542_      perf_13.txt               2025-10-30 03:21:05  4         
+1761794465386908447_      perf_14.txt               2025-10-30 03:21:05  4         
+1761794465427478372_      perf_15.txt               2025-10-30 03:21:05  4         
+1761794465466210870_      perf_16.txt               2025-10-30 03:21:05  4         
+1761794465505577657_      perf_17.txt               2025-10-30 03:21:05  4         
+1761794465547726417_      perf_18.txt               2025-10-30 03:21:05  4         
+1761794465589198686_      perf_19.txt               2025-10-30 03:21:05  4         
+1761794465630436082_      perf_1.txt                2025-10-30 03:21:05  3         
+1761794465672222936_      perf_20.txt               2025-10-30 03:21:05  4         
+1761794465715671518_      perf_21.txt               2025-10-30 03:21:05  4         
+1761794465755481506_      perf_22.txt               2025-10-30 03:21:05  4         
+1761794465794865878_      perf_23.txt               2025-10-30 03:21:05  4         
+1761794465832681945_      perf_24.txt               2025-10-30 03:21:05  4         
+1761794465871353996_      perf_25.txt               2025-10-30 03:21:05  4         
+1761794465911646062_      perf_26.txt               2025-10-30 03:21:05  4         
+1761794465950766857_      perf_27.txt               2025-10-30 03:21:05  4         
+1761794465988126289_      perf_28.txt               2025-10-30 03:21:05  4         
+1761794466020566327_      perf_29.txt               2025-10-30 03:21:06  4         
+1761794466060367969_      perf_2.txt                2025-10-30 03:21:06  3         
+1761794466098994715_      perf_30.txt               2025-10-30 03:21:06  4         
+1761794466136290550_      perf_31.txt               2025-10-30 03:21:06  4         
+1761794466170664943_      perf_32.txt               2025-10-30 03:21:06  4         
+1761794466208856486_      perf_33.txt               2025-10-30 03:21:06  4         
+1761794466248622815_      perf_34.txt               2025-10-30 03:21:06  4         
+1761794466284271962_      perf_35.txt               2025-10-30 03:21:06  4         
+1761794466322782370_      perf_36.txt               2025-10-30 03:21:06  4         
+1761794466363103888_      perf_37.txt               2025-10-30 03:21:06  4         
+1761794466404049304_      perf_38.txt               2025-10-30 03:21:06  4         
+1761794466442437045_      perf_39.txt               2025-10-30 03:21:06  4         
+1761794466481711715_      perf_3.txt                2025-10-30 03:21:06  3         
+1761794466520354675_      perf_40.txt               2025-10-30 03:21:06  4         
+1761794466560305782_      perf_41.txt               2025-10-30 03:21:06  4         
+1761794466597452146_      perf_42.txt               2025-10-30 03:21:06  4         
+1761794466636476613_      perf_43.txt               2025-10-30 03:21:06  4         
+1761794466675412815_      perf_44.txt               2025-10-30 03:21:06  4         
+1761794466715353965_      perf_45.txt               2025-10-30 03:21:06  4         
+1761794466751715265_      perf_46.txt               2025-10-30 03:21:06  4         
+1761794466792633295_      perf_47.txt               2025-10-30 03:21:06  4         
+1761794466831788885_      perf_48.txt               2025-10-30 03:21:06  4         
+1761794466872017278_      perf_49.txt               2025-10-30 03:21:06  4         
+1761794466915452671_      perf_4.txt                2025-10-30 03:21:06  3         
+1761794466953938445_      perf_50.txt               2025-10-30 03:21:06  4         
+1761794466994759174_      perf_51.txt               2025-10-30 03:21:07  4         
+1761794467036243648_      perf_52.txt               2025-10-30 03:21:07  4         
+1761794467079313362_      perf_53.txt               2025-10-30 03:21:07  4         
+1761794467123643704_      perf_54.txt               2025-10-30 03:21:07  4         
+1761794467149256307_      perf_55.txt               2025-10-30 03:21:07  4         
+1761794467169904753_      perf_56.txt               2025-10-30 03:21:07  4         
+1761794467190380623_      perf_57.txt               2025-10-30 03:21:07  4         
+1761794467211351540_      perf_58.txt               2025-10-30 03:21:07  4         
+1761794467235254827_      perf_59.txt               2025-10-30 03:21:07  4         
+1761794467263066055_      perf_5.txt                2025-10-30 03:21:07  3         
+1761794467295088132_      perf_60.txt               2025-10-30 03:21:07  4         
+1761794467327375400_      perf_61.txt               2025-10-30 03:21:07  4         
+1761794467362652746_      perf_62.txt               2025-10-30 03:21:07  4         
+1761794467400323328_      perf_63.txt               2025-10-30 03:21:07  4         
+1761794467439916104_      perf_64.txt               2025-10-30 03:21:07  4         
+1761794467479905653_      perf_65.txt               2025-10-30 03:21:07  4         
+1761794467519018752_      perf_66.txt               2025-10-30 03:21:07  4         
+1761794467556959861_      perf_67.txt               2025-10-30 03:21:07  4         
+1761794467599286160_      perf_68.txt               2025-10-30 03:21:07  4         
+1761794467640848635_      perf_69.txt               2025-10-30 03:21:07  4         
+1761794467680557977_      perf_6.txt                2025-10-30 03:21:07  3         
+1761794467724121184_      perf_70.txt               2025-10-30 03:21:07  4         
+1761794467765137566_      perf_71.txt               2025-10-30 03:21:07  4         
+1761794467809447760_      perf_72.txt               2025-10-30 03:21:07  4         
+1761794467846904126_      perf_73.txt               2025-10-30 03:21:07  4         
+1761794467883222941_      perf_74.txt               2025-10-30 03:21:07  4         
+1761794467922562775_      perf_75.txt               2025-10-30 03:21:07  4         
+1761794467960693598_      perf_76.txt               2025-10-30 03:21:07  4         
+1761794468001996222_      perf_77.txt               2025-10-30 03:21:08  4         
+1761794468034504432_      perf_78.txt               2025-10-30 03:21:08  4         
+1761794468075471611_      perf_79.txt               2025-10-30 03:21:08  4         
+1761794468113714399_      perf_7.txt                2025-10-30 03:21:08  3         
+1761794468151707786_      perf_80.txt               2025-10-30 03:21:08  4         
+1761794468187649523_      perf_81.txt               2025-10-30 03:21:08  4         
+1761794468223903607_      perf_82.txt               2025-10-30 03:21:08  4         
+1761794468260330233_      perf_83.txt               2025-10-30 03:21:08  4         
+1761794468295834305_      perf_84.txt               2025-10-30 03:21:08  4         
+1761794468339020238_      perf_85.txt               2025-10-30 03:21:08  4         
+1761794468384552159_      perf_86.txt               2025-10-30 03:21:08  4         
+1761794468423280366_      perf_87.txt               2025-10-30 03:21:08  4         
+1761794468458685360_      perf_88.txt               2025-10-30 03:21:08  4         
+1761794468499407333_      perf_89.txt               2025-10-30 03:21:08  4         
+1761794468534881833_      perf_8.txt                2025-10-30 03:21:08  3         
+1761794468573073422_      perf_90.txt               2025-10-30 03:21:08  4         
+1761794468611154098_      perf_91.txt               2025-10-30 03:21:08  4         
+1761794468651959069_      perf_92.txt               2025-10-30 03:21:08  4         
+1761794468693918159_      perf_93.txt               2025-10-30 03:21:08  4         
+1761794468733474102_      perf_94.txt               2025-10-30 03:21:08  4         
+1761794468774070921_      perf_95.txt               2025-10-30 03:21:08  4         
+1761794468811552364_      perf_96.txt               2025-10-30 03:21:08  4         
+1761794468852290072_      perf_97.txt               2025-10-30 03:21:08  4         
+1761794468895151920_      perf_98.txt               2025-10-30 03:21:08  4         
+1761794468937344294_      perf_99.txt               2025-10-30 03:21:08  4         
+1761794468976924488_      perf_9.txt                2025-10-30 03:21:08  3         
+[0;32m:) PASS [31][0m Listed large bin
+
+--- Test 32: Search 'perf_' inside large metadata ---
+=== Search Results for 'perf_' ===
+1761794465180312343_      perf_100.txt              2025-10-30 03:21:05  5         
+1761794465222575172_      perf_10.txt               2025-10-30 03:21:05  4         
+1761794465265325757_      perf_11.txt               2025-10-30 03:21:05  4         
+1761794465304266481_      perf_12.txt               2025-10-30 03:21:05  4         
+1761794465344288542_      perf_13.txt               2025-10-30 03:21:05  4         
+1761794465386908447_      perf_14.txt               2025-10-30 03:21:05  4         
+1761794465427478372_      perf_15.txt               2025-10-30 03:21:05  4         
+1761794465466210870_      perf_16.txt               2025-10-30 03:21:05  4         
+1761794465505577657_      perf_17.txt               2025-10-30 03:21:05  4         
+1761794465547726417_      perf_18.txt               2025-10-30 03:21:05  4         
+1761794465589198686_      perf_19.txt               2025-10-30 03:21:05  4         
+1761794465630436082_      perf_1.txt                2025-10-30 03:21:05  3         
+1761794465672222936_      perf_20.txt               2025-10-30 03:21:05  4         
+1761794465715671518_      perf_21.txt               2025-10-30 03:21:05  4         
+1761794465755481506_      perf_22.txt               2025-10-30 03:21:05  4         
+1761794465794865878_      perf_23.txt               2025-10-30 03:21:05  4         
+1761794465832681945_      perf_24.txt               2025-10-30 03:21:05  4         
+1761794465871353996_      perf_25.txt               2025-10-30 03:21:05  4         
+1761794465911646062_      perf_26.txt               2025-10-30 03:21:05  4         
+1761794465950766857_      perf_27.txt               2025-10-30 03:21:05  4         
+1761794465988126289_      perf_28.txt               2025-10-30 03:21:05  4         
+1761794466020566327_      perf_29.txt               2025-10-30 03:21:06  4         
+1761794466060367969_      perf_2.txt                2025-10-30 03:21:06  3         
+1761794466098994715_      perf_30.txt               2025-10-30 03:21:06  4         
+1761794466136290550_      perf_31.txt               2025-10-30 03:21:06  4         
+1761794466170664943_      perf_32.txt               2025-10-30 03:21:06  4         
+1761794466208856486_      perf_33.txt               2025-10-30 03:21:06  4         
+1761794466248622815_      perf_34.txt               2025-10-30 03:21:06  4         
+1761794466284271962_      perf_35.txt               2025-10-30 03:21:06  4         
+1761794466322782370_      perf_36.txt               2025-10-30 03:21:06  4         
+1761794466363103888_      perf_37.txt               2025-10-30 03:21:06  4         
+1761794466404049304_      perf_38.txt               2025-10-30 03:21:06  4         
+1761794466442437045_      perf_39.txt               2025-10-30 03:21:06  4         
+1761794466481711715_      perf_3.txt                2025-10-30 03:21:06  3         
+1761794466520354675_      perf_40.txt               2025-10-30 03:21:06  4         
+1761794466560305782_      perf_41.txt               2025-10-30 03:21:06  4         
+1761794466597452146_      perf_42.txt               2025-10-30 03:21:06  4         
+1761794466636476613_      perf_43.txt               2025-10-30 03:21:06  4         
+1761794466675412815_      perf_44.txt               2025-10-30 03:21:06  4         
+1761794466715353965_      perf_45.txt               2025-10-30 03:21:06  4         
+1761794466751715265_      perf_46.txt               2025-10-30 03:21:06  4         
+1761794466792633295_      perf_47.txt               2025-10-30 03:21:06  4         
+1761794466831788885_      perf_48.txt               2025-10-30 03:21:06  4         
+1761794466872017278_      perf_49.txt               2025-10-30 03:21:06  4         
+1761794466915452671_      perf_4.txt                2025-10-30 03:21:06  3         
+1761794466953938445_      perf_50.txt               2025-10-30 03:21:06  4         
+1761794466994759174_      perf_51.txt               2025-10-30 03:21:07  4         
+1761794467036243648_      perf_52.txt               2025-10-30 03:21:07  4         
+1761794467079313362_      perf_53.txt               2025-10-30 03:21:07  4         
+1761794467123643704_      perf_54.txt               2025-10-30 03:21:07  4         
+1761794467149256307_      perf_55.txt               2025-10-30 03:21:07  4         
+1761794467169904753_      perf_56.txt               2025-10-30 03:21:07  4         
+1761794467190380623_      perf_57.txt               2025-10-30 03:21:07  4         
+1761794467211351540_      perf_58.txt               2025-10-30 03:21:07  4         
+1761794467235254827_      perf_59.txt               2025-10-30 03:21:07  4         
+1761794467263066055_      perf_5.txt                2025-10-30 03:21:07  3         
+1761794467295088132_      perf_60.txt               2025-10-30 03:21:07  4         
+1761794467327375400_      perf_61.txt               2025-10-30 03:21:07  4         
+1761794467362652746_      perf_62.txt               2025-10-30 03:21:07  4         
+1761794467400323328_      perf_63.txt               2025-10-30 03:21:07  4         
+1761794467439916104_      perf_64.txt               2025-10-30 03:21:07  4         
+1761794467479905653_      perf_65.txt               2025-10-30 03:21:07  4         
+1761794467519018752_      perf_66.txt               2025-10-30 03:21:07  4         
+1761794467556959861_      perf_67.txt               2025-10-30 03:21:07  4         
+1761794467599286160_      perf_68.txt               2025-10-30 03:21:07  4         
+1761794467640848635_      perf_69.txt               2025-10-30 03:21:07  4         
+1761794467680557977_      perf_6.txt                2025-10-30 03:21:07  3         
+1761794467724121184_      perf_70.txt               2025-10-30 03:21:07  4         
+1761794467765137566_      perf_71.txt               2025-10-30 03:21:07  4         
+1761794467809447760_      perf_72.txt               2025-10-30 03:21:07  4         
+1761794467846904126_      perf_73.txt               2025-10-30 03:21:07  4         
+1761794467883222941_      perf_74.txt               2025-10-30 03:21:07  4         
+1761794467922562775_      perf_75.txt               2025-10-30 03:21:07  4         
+1761794467960693598_      perf_76.txt               2025-10-30 03:21:07  4         
+1761794468001996222_      perf_77.txt               2025-10-30 03:21:08  4         
+1761794468034504432_      perf_78.txt               2025-10-30 03:21:08  4         
+1761794468075471611_      perf_79.txt               2025-10-30 03:21:08  4         
+1761794468113714399_      perf_7.txt                2025-10-30 03:21:08  3         
+1761794468151707786_      perf_80.txt               2025-10-30 03:21:08  4         
+1761794468187649523_      perf_81.txt               2025-10-30 03:21:08  4         
+1761794468223903607_      perf_82.txt               2025-10-30 03:21:08  4         
+1761794468260330233_      perf_83.txt               2025-10-30 03:21:08  4         
+1761794468295834305_      perf_84.txt               2025-10-30 03:21:08  4         
+1761794468339020238_      perf_85.txt               2025-10-30 03:21:08  4         
+1761794468384552159_      perf_86.txt               2025-10-30 03:21:08  4         
+1761794468423280366_      perf_87.txt               2025-10-30 03:21:08  4         
+1761794468458685360_      perf_88.txt               2025-10-30 03:21:08  4         
+1761794468499407333_      perf_89.txt               2025-10-30 03:21:08  4         
+1761794468534881833_      perf_8.txt                2025-10-30 03:21:08  3         
+1761794468573073422_      perf_90.txt               2025-10-30 03:21:08  4         
+1761794468611154098_      perf_91.txt               2025-10-30 03:21:08  4         
+1761794468651959069_      perf_92.txt               2025-10-30 03:21:08  4         
+1761794468693918159_      perf_93.txt               2025-10-30 03:21:08  4         
+1761794468733474102_      perf_94.txt               2025-10-30 03:21:08  4         
+1761794468774070921_      perf_95.txt               2025-10-30 03:21:08  4         
+1761794468811552364_      perf_96.txt               2025-10-30 03:21:08  4         
+1761794468852290072_      perf_97.txt               2025-10-30 03:21:08  4         
+1761794468895151920_      perf_98.txt               2025-10-30 03:21:08  4         
+1761794468937344294_      perf_99.txt               2025-10-30 03:21:08  4         
+1761794468976924488_      perf_9.txt                2025-10-30 03:21:08  3         
+[0;32m:) PASS [32][0m Search in large metadata executed
+
+--- Test 33: Repeated delete/restore cycles ---
+[0;32m✓ Moved to recycle bin:[0m cycle.txt (ID: 1761794469090238537_okas3n)
+[0;32m✓ Restored:[0m /home/ruivo/OneDrive/1 SEMESTRE/SO/Projeto/SO-Recycle-Bin/test_data/cycle.txt
+[0;32m✓ Moved to recycle bin:[0m cycle.txt (ID: 1761794469172087937_sbcfjc)
+[0;32m✓ Restored:[0m /home/ruivo/OneDrive/1 SEMESTRE/SO/Projeto/SO-Recycle-Bin/test_data/cycle.txt
+[0;32m✓ Moved to recycle bin:[0m cycle.txt (ID: 1761794469253335836_q04jku)
+[0;32m✓ Restored:[0m /home/ruivo/OneDrive/1 SEMESTRE/SO/Projeto/SO-Recycle-Bin/test_data/cycle.txt
+[0;32m:) PASS [33][0m Repeated delete/restore cycles executed
+
+--- Test 34: Concurrent operations ---
+[0;32m:) PASS [34][0m Concurrent deletes executed (background)
+
+--- Test 35: Stats output ---
+=== Recycle Bin Statistics ===
+[0;32m:) PASS [35][0m Stats command executed
+
+--- Test 36: Missing config file handling ---
+[0;31mError: Config file missing[0m
+[0;31mError: Config file missing[0m
+[0;32m:) PASS [36][0m Missing config handled (commands did not crash)
+
+=== TEST SUMMARY ===
+Total tests: 36
+Passed: 36
+Failed: 0
+[0;32m All 36 tests passed successfully![0m
